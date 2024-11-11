@@ -1,4 +1,4 @@
-# Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu
+# Ex-05-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu
 ## AADHITHYA D-212222220001
 ## AIM
 
@@ -11,102 +11,206 @@ a) jdk
 Single-Node Configuration
 
 1.	Create a dedicated user account for hadoop
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/3de21905-1b6e-4007-a484-025e2b2f897b)
+```
+    $sudo addgroup hadoop
 
+    $sudo adduser --ingroup hadoop hduser
+
+    $sudo usermod -a -G sudo hduser
+
+    $su - hduser
+```
 2.	Install java1.8 in folder /usr/local
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/110760be-ff06-4ae2-948a-6ade3b541d93)
+   ```
+    $sudo chmod 777 /usr/local
 
+    $cd /usr/local
+
+    $sudo tar xvzf $HOME/Downloads/jdk1.8.tar.gz
+```
 3.	Install Hadoop
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/223bb242-300c-4cf0-acd2-41328b8914f9)
+```
+    $cd /usr/local
 
+    $tar xvzf $HOME/Downloads/hadoop-2.5.1.tar.gz
+
+    $sudo chmod 777 hadoop-2.5.1
+```
 4.	Set the hadoop environment variables: Include the following lines in the
 $HOME/.bashrc file
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/e13c3952-aa03-47f1-be13-e0e04e3f8c85)
-
+#Set Hadoop-related environment variables
+```
+export HADOOP_HOME=/usr/local/hadoop-2.5.1
+```
+#Set JAVA home directory
+```
+    export JAVA_HOME=/usr/local/jdk1.8.0_31
+```
+#Add Hadoop bin/ directory to PATH
+```
+    export PATH=$PATH:$HADOOP_HOME/bin
+```
  
 5.	Set hadoop environment variables: Include the following lines /etc/profile file
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/14fd3259-d177-4243-97f7-9dd17b6a45a2)
-
+#--insert JAVA_HOME
+```
+    JAVA_HOME=/usr/local/jdk1.8.0_31
+```
+#--insert HADOOP_PREFIX
+```
+    HADOOP_PREFIX=/usr/local/hadoop-2.5.1
+```
+#--in PATH variable just append at the end of the line
+```
+    PATH=$PATH: $JAVA_HOME/bin:$HADOOP_PREFIX/bin
+```
+#--Append HADOOP_PREFIX at end of the export statement export
+```
+    PATH JAVA_HOME HADOOP_PREFIX
+```
 
 6.	Run the.bashrc & profile files from the $ prompt for updating the changes
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/48a3295f-4b5c-4c7a-a326-dd8285e68ef0)
+
+```
+    $ source $HOME/.bashrc
+
+    $ source /etc/profile
+```
+Verify java & hadoop installation using
+```
+    $ java -version
+    $ echo $HADOOP_PREFIX
+    $ cd $HADOOP_PREFIX
+
+    $ bin/hadoop version
+```
 
 
-
-
-$ bin/hadoop version	
 
 7.	Configuration of the hadoop files: hadoop-env.sh, core-site.xml, mapred-site.xml, hdfs- site.xml and yarn-site.xml
-
-path ::	/usr/local/hadoop-2.5.1/etc/hadoop
-
+```
+   path ::	/usr/local/hadoop-2.5.1/etc/hadoop
+```
 a)	hadoop-env.sh
 Include the following lines in hadoop-env.sh file
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/98ebad6d-5c08-436b-bbed-4238573cf4a1)
-
+```
+    export JAVA_HOME=/usr/local/jdk1.8.0_31
+    export HADOOP_PREFIX=/usr/local/hadoop-2.5.1
+```
 
 b)	core-site.xml
 Configure the directory for Hadoop to store its data files, the network ports it listens to, etc. Setup will use Hadoop’s Distributed File System (HDFS-single local machine)
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/fb74aa85-efe1-4fe2-850e-796b98df41c6)
-
+```
+    $ mkdir -p /app/hadoop/tmp
+    $ chown hduser:hadoop /app/hadoop/tmp
+```
 
  
 Include the following lines in core-site.xml file between <configuration> and
 </configuration> tags
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/eeb86eaa-4034-428f-a525-4736c43bccca)
-
+```
+    <property>
+            <name>hadoop.tmp.dir</name>
+            <value>/app/hadoop/tmp</value>
+    </property>
+    <property>
+            <name>fs.default.name</name>
+            <value>hdfs://localhost:9000</value>
+    </property>
+```
 
 c)	mapred-site.xml
- ![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/ac8d1033-784f-4bbd-abe1-e29a73046de6)
-
+```
+     $sudo cp mapred-site.xml.template mapred-site.xml
+``` 
 
 Include the following lines in mapred-site.xml file
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/8b2042e7-935d-467d-85cd-4d28f68f92db)
+```
+    <property>
+            <name>mapreduce.framework.name</name>
+            <value>yarn</value>
+    </property>
+```
 
+ 
 
 d)	hdfs-site.xml
 Include the following lines in hdfs-site.xml file
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/e05ddd7b-1e16-4009-a908-622c39cfdf14)
+```
+    <property>
+            <name>dfs.replication</name>
+            <value>1</value>
+    </property>
+```
 
 
 e)	yarn-site.xml
 Include the following lines in yarn-site.xml file
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/e0aa4df4-324f-4901-8e41-1b9e0435265d)
-
+```
+    <property>
+            <name>yarn.nodemanager.aux-services</name>
+            <value>mapreduce_shuffle</value>
+    </property>
+```
 8.	Format the Hadoop File system implemented on top of the local file system using
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/8d890e65-00d5-46c5-90c1-b3269d7dc3b1)
-
+```
+    $/usr/local/hadoop-2.5.1/bin/hadoop namenode –format
+```
 9.	Start Hadoop using
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/7f7e2257-08aa-43a3-a575-3fe32adfa833)
+```
+    $sbin/start-all.sh
+```
 
 
 Explore Hadoop using http://localhost:50070/ from the browser	
  
 10.	The commonly used HDFS Commands are as follows:
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/894711dc-85e8-41a8-a8dd-48d9039131d0)
+```
+### mkdir :
+##### Creates a directory in the given path:
+    syntax: bin/hdfs dfs -mkdir <paths>
 
+### ls
+##### Lists the files in a given path
+    syntax:bin/hdfs dfs -ls <args>
 
+### cp
+##### Copies files from source to destination. This command allows multiple sources as well in which case the destination must be a directory.
+    syntax:bin/hdfs dfs -cp <source> <dest>
+```
 
 11.	Create a directory ‘/input’ in HDFS
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/4bdf6eb3-ec0c-441a-8e70-a574d33b1396)
-
+```
+    $bin/hdfs dfs -mkdir /input
+```
 
 12.	Copy the input files into the distributed file system
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/ade0b0b7-946d-474f-b65a-dea4e3e85b3f)
+```
+    $cd $HOME/Downloads/
+
+    $ tar xvzf $HOME/Downloads/mrsampledata.tar.gz
+```
 
 13.	Run some of the examples provided
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/da758424-3904-4100-9445-39864cd519a9)
-
+```
+    $ bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce- examples-2.5.1.jar grep /input /output '(CSE)'
+```
 
 14.	Examine the output files
-	![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/df1e440a-72ac-4534-af28-ef121b4c0768)
+```    $ cd $HADOOP_PREFIX
 
+    $bin/hdfs dfs -put $HOME/Downloads/mrsampledata/* /input
+```
 Copy the output files from the distributed file system to the local file system and examine them:
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/0e038242-5d89-47ee-9341-62c598f9fdf4)
- 
+```
+    $ bin/hdfs dfs -get output output
+    
+    $ cat output/*
+```
 or
 View the output files on the distributed file system
-![image](https://github.com/AjaysuryaS/Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu/assets/114158396/7e834ba0-6915-4f28-ba99-fdf515d13b73)
-
+```
+    $ bin/hdfs dfs -cat /output/*
+```
 ## Result:
 Thus, the implementation of Pseudo Node configuration for Hadoop on ubuntu is successfully executed.
