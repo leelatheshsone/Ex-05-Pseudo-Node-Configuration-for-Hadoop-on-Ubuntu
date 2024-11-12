@@ -1,5 +1,5 @@
 # Ex-06-Pseudo-Node-Configuration-for-Hadoop-on-Ubuntu
-## AADHITHYA D-212222220001
+## S.LEELATHESH-212221045003
 ## AIM
 
 To implement Pseudo Node configuration for Hadoop on ubuntu
